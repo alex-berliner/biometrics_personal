@@ -6,20 +6,23 @@ from database import *
 
 class DatabaseScriptConverter:
     def __init__(self, path, dbname, scriptname):
-        path=path.rstrip("/")
+        path = path.rstrip("/")
         self.dbpath     = "%s/%s"%(path, dbname)
         self.scriptpath = "%s/%s"%(path, scriptname)
 
     def save_sql_script(self):
-        conn = sqlite3.connect(self.dbpath) # TODO make sure path exists
+        if not os.path.exists(self.dbpath):
+            print(self.dbpath + " does not exist")
+            return
+        conn = sqlite3.connect(self.dbpath) # TODO check path exists
         with open(self.scriptpath, "w") as f:
             for line in conn.iterdump():
                 f.write("%s\n" % line)
         conn.close()
 
-database_migraine_buddy = DatabaseScriptConverter("migraine_buddy", "migraine.db",        "migraine_buddy.sql")
-database_daylio         = DatabaseScriptConverter("daylio",         "entries.db",         "daylio.sql")
-database_withings       = DatabaseScriptConverter("withings",       "room-healthmate.db", "withings.sql")
+database_migraine_buddy = DatabaseScriptConverter("databases/migraine_buddy", "migraine.db",        "migraine_buddy.sql")
+database_daylio         = DatabaseScriptConverter("databases/daylio",         "entries.db",         "daylio.sql")
+database_withings       = DatabaseScriptConverter("databases/withings",       "room-healthmate.db", "withings.sql")
 dbs = \
 [
     database_migraine_buddy,
@@ -27,9 +30,12 @@ dbs = \
     database_withings,
 ]
 
-def main():
+def convert_databases():
     for db in dbs:
         db.save_sql_script()
+
+def main():
+    convert_databases()
 
 if __name__ == "__main__":
     main()
