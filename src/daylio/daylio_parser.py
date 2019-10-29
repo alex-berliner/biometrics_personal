@@ -4,7 +4,6 @@ import sys
 sys.path.insert(0, "src/oop")
 from headache_event import *
 from event import *
-from daylio_event import *
 from headache_daylio_event import *
 
 sys.path.insert(0, "src")
@@ -13,7 +12,7 @@ from parser import *
 sys.path.insert(0, "src/daylio")
 from daylio_table import *
 
-class DaylioParser():
+class DaylioParser(Parser):
     daylio_regex_headache = "headache (\\<?\\d(\\.?\\d)?)".lower()
     daylio_regex_neck     = "neck pain (\\<?\\d(\\.?\\d)?)".lower()
     daylio_text_new_scale = "start new headache scale"
@@ -37,7 +36,7 @@ class DaylioParser():
                 if len(lnote) < 1:
                     pass
                 conv_date = int(int(daylio_entry.date_time)/1000)
-                event = DaylioEvent(conv_date, note)
+                event = Event(conv_date, note)
 
                 # Special case for headaches: scale was switched from 1-10 to 0-5, must convert
                 # old entries based on conversion date marker
@@ -46,25 +45,25 @@ class DaylioParser():
                     # print("switch date is %s"%event.time)
                     HeadacheDaylioEvent.switch_time = conv_date
                 elif re.match(self.daylio_regex_headache, lnote):
-                    Parser.headache += [HeadacheDaylioEvent(conv_date, note)]
+                    self.headache += [HeadacheDaylioEvent(conv_date, note)]
                 elif "took" in lnote:
-                    Parser.took_meds += [event]
+                    self.took_meds += [event]
                 elif "migraine" in lnote:
-                    Parser.migraine += [event]
+                    self.migraine += [event]
                 elif "mood" in lnote:
-                    Parser.mood += [event]
+                    self.mood += [event]
                 elif "stomach" in lnote:
-                    Parser.stomach_pain += [event]
+                    self.stomach_pain += [event]
                 elif "neck" in lnote:
-                    Parser.neck_pain += [event]
+                    self.neck_pain += [event]
                 elif "ate " in lnote:
-                    Parser.ate_food += [event]
+                    self.ate_food += [event]
                 elif "sick" in lnote:
-                    Parser.sick += [event]
+                    self.sick += [event]
                 elif "started" in lnote:
-                    Parser.started_meds += [event]
+                    self.started_meds += [event]
                 elif "stopped" in lnote:
-                    Parser.stopped_meds += [event]
+                    self.stopped_meds += [event]
                 elif "exercise" in lnote\
                 or "yoga" in lnote\
                 or "soccer" in lnote\
@@ -75,10 +74,10 @@ class DaylioParser():
                 or "walk" in lnote\
                 or "hike" in lnote\
                     :
-                    Parser.exercise += [event]
+                    self.exercise += [event]
                 elif "sleepy" in lnote\
                 or "tired" in lnote\
                 :
-                    Parser.fatigue += [event]
+                    self.fatigue += [event]
                 else:
-                    Parser.misc += [event]
+                    self.misc += [event]

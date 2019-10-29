@@ -1,9 +1,10 @@
 import re
 import sys
 sys.path.insert(0, "src/oop")
-from daylio_event import *
+from event import *
 
-class HeadacheDaylioEvent(DaylioEvent):
+# Different types
+class HeadacheDaylioEvent(Event):
     switch_time = None
 
     daylio_regex_headache = "Headache (\\<?\\d(\\.\\d*)?)"
