@@ -18,18 +18,14 @@ from daylio_parser import *
 sys.path.insert(0, "src")
 from parser import *
 
-def main():
-    biometrics_conn = sqlite3.connect('biometrics.db')
-    daylio_conn     = sqlite3.connect('data_backings/daylio/entries.db')
+def convert_daylio(biometrics_context):
     daylio_parser = DaylioParser()
-    daylio_parser.parse_daylio(daylio_conn)
-
-    parser = Parser()
-    parser.process_all()
-
-    biometrics_conn.commit()
-    biometrics_conn.close()
+    daylio_conn = sqlite3.connect('data_backings/daylio/entries.db')
+    daylio_parser.parse_daylio(daylio_conn, biometrics_context)
     daylio_conn.close()
+
+def main():
+    convert_daylio()
 
 if __name__ == "__main__":
     main()

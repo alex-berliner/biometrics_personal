@@ -1,39 +1,38 @@
-# All events will be stored based on type (headache, migraine, etc), so parsers from all backends
-# can share this common base to add to the shared event lists
-class Parser():
-    event_types   = []
-    headache     = []
-    took_meds    = []
-    migraine     = []
-    mood         = []
-    stomach_pain = []
-    neck_pain    = []
-    ate_food     = []
-    sick         = []
-    started_meds = []
-    stopped_meds = []
-    exercise     = []
-    fatigue      = []
-    misc         = []
-    event_types += [headache]
-    event_types += [took_meds]
-    event_types += [migraine]
-    event_types += [mood]
-    event_types += [stomach_pain]
-    event_types += [neck_pain]
-    event_types += [ate_food]
-    event_types += [sick]
-    event_types += [started_meds]
-    event_types += [stopped_meds]
-    event_types += [exercise]
-    event_types += [fatigue]
-    event_types += [misc]
-
+# Data holder to be added to by all data backends
+class BiometricsContext():
     def __init__(self):
-        pass
+        # create categories of tracked data
+        self.headache     = []
+        self.took_meds    = []
+        self.migraine     = []
+        self.mood         = []
+        self.stomach_pain = []
+        self.neck_pain    = []
+        self.ate_food     = []
+        self.sick         = []
+        self.started_meds = []
+        self.stopped_meds = []
+        self.exercise     = []
+        self.fatigue      = []
+        self.misc         = []
+
+        # add all categories to one list so they can be looped through
+        self.event_types  = []
+        self.event_types += [self.headache]
+        self.event_types += [self.took_meds]
+        self.event_types += [self.migraine]
+        self.event_types += [self.mood]
+        self.event_types += [self.stomach_pain]
+        self.event_types += [self.neck_pain]
+        self.event_types += [self.ate_food]
+        self.event_types += [self.sick]
+        self.event_types += [self.started_meds]
+        self.event_types += [self.stopped_meds]
+        self.event_types += [self.exercise]
+        self.event_types += [self.fatigue]
+        self.event_types += [self.misc]
 
     def process_all(self):
-        for event_list in Parser.event_types:
+        for event_list in self.event_types:
             for event in event_list:
                 event.process()
-

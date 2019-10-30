@@ -12,17 +12,16 @@ from parser import *
 sys.path.insert(0, "src/daylio")
 from daylio_table import *
 
-class DaylioParser(Parser):
+class DaylioParser():
     daylio_regex_headache = "headache (\\<?\\d(\\.?\\d)?)".lower()
     daylio_regex_neck     = "neck pain (\\<?\\d(\\.?\\d)?)".lower()
     daylio_text_new_scale = "start new headache scale"
     # drugs = ["aimovig", "tylenol", "maxalt", "caffiene", "advil", "gralise", "gabapentin"]
 
     def __init__(self):
-        parent=super(DaylioParser, self)
-        parent.__init__()
+        pass
 
-    def parse_daylio(self, conn):
+    def parse_daylio(self, conn, biometrics_context):
         def sortkey(item): return item[0]
 
         cursor = conn.cursor()
@@ -45,25 +44,25 @@ class DaylioParser(Parser):
                     # print("switch date is %s"%event.time)
                     HeadacheDaylioEvent.switch_time = conv_date
                 elif re.match(self.daylio_regex_headache, lnote):
-                    self.headache += [HeadacheDaylioEvent(conv_date, note)]
+                    biometrics_context.headache += [HeadacheDaylioEvent(conv_date, note)]
                 elif "took" in lnote:
-                    self.took_meds += [event]
+                    biometrics_context.took_meds += [event]
                 elif "migraine" in lnote:
-                    self.migraine += [event]
+                    biometrics_context.migraine += [event]
                 elif "mood" in lnote:
-                    self.mood += [event]
+                    biometrics_context.mood += [event]
                 elif "stomach" in lnote:
-                    self.stomach_pain += [event]
+                    biometrics_context.stomach_pain += [event]
                 elif "neck" in lnote:
-                    self.neck_pain += [event]
+                    biometrics_context.neck_pain += [event]
                 elif "ate " in lnote:
-                    self.ate_food += [event]
+                    biometrics_context.ate_food += [event]
                 elif "sick" in lnote:
-                    self.sick += [event]
+                    biometrics_context.sick += [event]
                 elif "started" in lnote:
-                    self.started_meds += [event]
+                    biometrics_context.started_meds += [event]
                 elif "stopped" in lnote:
-                    self.stopped_meds += [event]
+                    biometrics_context.stopped_meds += [event]
                 elif "exercise" in lnote\
                 or "yoga" in lnote\
                 or "soccer" in lnote\
@@ -74,10 +73,10 @@ class DaylioParser(Parser):
                 or "walk" in lnote\
                 or "hike" in lnote\
                     :
-                    self.exercise += [event]
+                    biometrics_context.exercise += [event]
                 elif "sleepy" in lnote\
                 or "tired" in lnote\
                 :
-                    self.fatigue += [event]
+                    biometrics_context.fatigue += [event]
                 else:
-                    self.misc += [event]
+                    biometrics_context.misc += [event]
