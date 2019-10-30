@@ -6,12 +6,16 @@ sys.path.insert(0, "src/daylio")
 from convert_daylio import *
 sys.path.insert(0, "src/migraine_buddy")
 from mbuddy_parser import *
+sys.path.insert(0, "src/withings")
+from withings_parser import *
 
 def main():
     biometrics_context = BiometricsContext()
     convert_daylio(biometrics_context)
     # mbuddy = Mbuddy()
     # mbuddy.connect_and_parse()
+    wparser = WithingsParser()
+    wparser.connect_and_parse()
     biometrics_conn = sqlite3.connect('biometrics.db')
     biometrics_conn.commit()
     biometrics_conn.close()
