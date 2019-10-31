@@ -15,7 +15,7 @@ ssh 192.168.5.104 -p 8022 "\
     mkdir -p $SD_DB_DIR;
     su -c \"\
         cp -r $DAYLIO_DB_DIR/$DAYLIO_DB_NAME*    $SD_DB_DIR;
-        cp -r $WITHING_DB_DIR/$WITHINGS_DB_NAME* $SD_DB_DIR;
+        cp -r $WITHING_DB_DIR/* $SD_DB_DIR;
     \";"
 
 # copy app data from sd card to local storage
@@ -25,7 +25,7 @@ mkdir -p $LOCAL_DB_DIR/daylio
 scp -v -r -P 8022 192.168.5.104:$SD_DB_DIR/$DAYLIO_DB_NAME* $LOCAL_DB_DIR/daylio/
 
 mkdir -p $LOCAL_DB_DIR/withings
-scp -v -r -P 8022 192.168.5.104:$SD_DB_DIR/$WITHINGS_DB_NAME* $LOCAL_DB_DIR/withings/
+scp -v -r -P 8022 192.168.5.104:$SD_DB_DIR/* $LOCAL_DB_DIR/withings/
 
 # remove app data from sd card
 ssh 192.168.5.104 -p 8022 "rm -rf $SD_DB_DIR"

@@ -970,6 +970,14 @@ INSERT INTO table_entries VALUES(968,0,22,27,9,2019,1572228016909,-14400000,3,'M
 INSERT INTO table_entries VALUES(969,0,8,28,9,2019,1572264016624,-14400000,3,'Headache 1');
 INSERT INTO table_entries VALUES(970,0,16,28,9,2019,1572292829788,-14400000,3,'Headache 0');
 INSERT INTO table_entries VALUES(971,6,20,28,9,2019,1572307610764,-14400000,3,'Start drug CoQ10');
+INSERT INTO table_entries VALUES(972,0,8,29,9,2019,1572350422216,-14400000,3,replace('Headache 1\nSleep 0:45 - 8:00','\n',char(10)));
+INSERT INTO table_entries VALUES(973,30,23,29,9,2019,1572406248709,-14400000,3,'Sleep start');
+INSERT INTO table_entries VALUES(974,30,4,30,9,2019,1572424250139,-14400000,3,'Sleep end');
+INSERT INTO table_entries VALUES(975,30,6,30,9,2019,1572431416531,-14400000,3,'Sleep start');
+INSERT INTO table_entries VALUES(976,10,9,30,9,2019,1572441030677,-14400000,3,'Sleep end');
+INSERT INTO table_entries VALUES(977,0,8,30,9,2019,1572436811302,-14400000,3,'Headache 1.4');
+INSERT INTO table_entries VALUES(978,30,10,30,9,2019,1572445836922,-14400000,3,'Headache 1.75');
+INSERT INTO table_entries VALUES(979,20,16,30,9,2019,1572466844753,-14400000,3,'Headache 1');
 CREATE TABLE table_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, icon INTEGER, created_at INTEGER, order_number INTEGER, state INTEGER , id_tag_group INTEGER DEFAULT 0);
 INSERT INTO table_tags VALUES(14,'Wake up',70,1532520278173,78217478,0,0);
 INSERT INTO table_tags VALUES(15,'work',16,1532466747128,1,0,0);
@@ -1334,7 +1342,7 @@ CREATE TABLE table_tag_groups (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, 
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('table_moods',6);
 INSERT INTO sqlite_sequence VALUES('table_tags',23);
-INSERT INTO sqlite_sequence VALUES('table_entries',971);
+INSERT INTO sqlite_sequence VALUES('table_entries',979);
 CREATE INDEX id_entry_index ON table_entries_with_tags(id_entry);
 CREATE INDEX id_tag_index ON table_entries_with_tags(id_tag);
 COMMIT;

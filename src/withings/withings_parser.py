@@ -15,11 +15,18 @@ class WithingsParser():
 
     def connect_and_parse(self):
         conn = sqlite3.connect("data_backings/withings/room-healthmate.db")
-        wi_cursor = conn.execute("SELECT * FROM Track")
+        wi_db = list(conn.execute("SELECT * FROM Track"))
+
         withings_entries = []
-        for row in wi_cursor:
+        for i in range(len(wi_db)):
+        # for row in wi_cursor:
+            row = wi_db[i]
             withings_entry = WithingsEntry(row)
             withings_entries += [withings_entry]
-            print(withings_entry)
-            exit()
+            sleep_time = withings_entry.get_sleep_time()
+            # if sleep_time > 0:
+            #     print(sleep_time)
+            # if i > 0:
+            #     exit()
+        # print(WithingsEntry.typesdict.keys())
         conn.close()
