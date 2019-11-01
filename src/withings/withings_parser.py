@@ -22,8 +22,10 @@ class WithingsParser():
         # for row in wi_cursor:
             row = wi_db[i]
             withings_entry = WithingsEntry(row)
+            print(withings_entry)
             withings_entries += [withings_entry]
-            sleep_time = withings_entry.get_sleep_time()
+            # sleep_time = withings_entry
+        # print(WithingsEntry.key_list)
             # if sleep_time > 0:
             #     print(sleep_time)
             # if i > 0:

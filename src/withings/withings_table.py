@@ -7,6 +7,7 @@ sys.path.insert(0, "../util/database")
 from database import *
 import json
 from collections import OrderedDict
+from datetime import timedelta
 # CREATE TABLE table_entries (
 # id INTEGER PRIMARY KEY AUTOINCREMENT
 # minute INTEGER
@@ -143,114 +144,118 @@ class WithingsEntry():
         self.spanlatitudedelta=withings_tuple[self.WithingsFields.SPANLATITUDEDELTA]
         self.spanlongitudedelta=withings_tuple[self.WithingsFields.SPANLONGITUDEDELTA]
         self.datajson_parsed = json.loads(self.datajson)
-
-    def get_sleep_time(self):
-        self.startdate
-        self.enddate
-        self.modifieddate
-        self.manualstartdate
-        sleep_sum = 0
-        durationToSleep = 0
-        if "lightSleepDuration" in self.datajson_parsed:
-            sleep_sum += int(self.datajson_parsed["lightSleepDuration"])
-        if "deepSleepDuration" in self.datajson_parsed:
-            sleep_sum += int(self.datajson_parsed["deepSleepDuration"])
-        if "manualSleepDuration" in self.datajson_parsed:
-            sleep_sum += int(self.datajson_parsed["manualSleepDuration"])
-        if "durationToSleep" in self.datajson_parsed:
-            duration_to_sleep = int(self.datajson_parsed["durationToSleep"])
-        # self.lightSleepDuration = (int(self.datajson_parsed["lightSleepDuration"])/1000)/60
-        # self.deepSleepDuration = (int(self.datajson_parsed["deepSleepDuration"])/1000)/60
-        # self.manualSleepDuration = (int(self.datajson_parsed["manualSleepDuration"])/1000)/60
-        # print(time_util.prettify_epoch_time(self.startdate))
-        # if multiple sleeps in one day, avg
-        if sleep_sum > 0:
-            # print(sleep_sum)
-            # print(time_util.prettify_epoch_time(self.enddate))
-            """if sleep_sum == 27000000:
-                # print(duration_to_sleep)
-                # print(sleep_sum/1000/60/60)
-                # print("start ",self.startdate)
-                # print("start ",time_util.prettify_epoch_time(self.startdate))
-                # print("end ",time_util.prettify_epoch_time(self.enddate))
-                print("fall asleep: %s"%(time_util.prettify_epoch_time(self.startdate+duration_to_sleep)))
-                print("wake up: %s"%(time_util.prettify_epoch_time(self.enddate-duration_to_sleep)))
-                # print(self)
-                print("")"""
-            print("fall asleep: %s"%(time_util.prettify_epoch_time(self.startdate+duration_to_sleep)))
-            print("wake up: %s"%(time_util.prettify_epoch_time(self.enddate-duration_to_sleep)))
-            print("")
-
-        return sleep_sum/60
-
+    counter = 0
 
     def __init__(self, withings_tuple):
+        def to_timedelta(key):
+            if key in self.datajson_parsed:
+                return timedelta(seconds=(int(self.datajson_parsed[key])/1000))
+            else:
+                return timedelta(0)
+
         self.set_fields_from_tuple(withings_tuple)
+        self.sleep = False
+
+        sleep_sum = 0
+        if "lightSleepDuration" in self.datajson_parsed:
+            sleep_sum += int(self.datajson_parsed["lightSleepDuration"])
+
+        if "deepSleepDuration" in self.datajson_parsed:
+            sleep_sum += int(self.datajson_parsed["deepSleepDuration"])
+
+        if "manualSleepDuration" in self.datajson_parsed:
+            sleep_sum += int(self.datajson_parsed["manualSleepDuration"])
+
+
+        if sleep_sum > 0:
+            self.sleep = True
+            self.light_sleep_duration  = to_timedelta("lightSleepDuration")
+            self.deep_sleep_duration   = to_timedelta("deepSleepDuration")
+            self.manual_sleep_duration = to_timedelta("manualSleepDuration")
+            self.rem_sleep_duration    = to_timedelta("remSleepDuration")
+
+            self.sleep_start = int(self.startdate)/1000
+            self.sleep_end = int(self.enddate)/1000+self.manual_sleep_duration.seconds
+
+            # wake_up_duration      = to_timedelta("wakeUpDuration")
+            # duration_to_sleep     = to_timedelta("durationToSleep")
+            # duration_to_get_up    = to_timedelta("durationToGetUp")
+            # wake_up_count         = self.datajson_parsed["wakeUpCount"]
+            self.timedelta_in_bed = timedelta(seconds=(self.sleep_end-self.sleep_start))
+            self.timedelta_slept = self.manual_sleep_duration + self.light_sleep_duration + self.deep_sleep_duration + self.rem_sleep_duration
+
+
         # typecat = "".join(list(self.datajson_parsed.keys()))
 
     def __str__(self):
         retstr = ""
-        retstr += "%s: %s\n"%("id",self.id)
-        retstr += "%s: %s\n"%("wsid",self.wsid)
-        retstr += "%s: %s\n"%("userid",self.userid)
-        retstr += "%s: %s\n"%("startdate",  time_util.prettify_epoch_time(self.startdate))
-        retstr += "%s: %s\n"%("enddate",    time_util.prettify_epoch_time(self.enddate))
-        retstr += "%s: %s\n"%("timezone",self.timezone)
-        retstr += "%s: %s\n"%("day",self.day)
-        retstr += "%s: %s\n"%("modifieddate",self.modifieddate)
-        retstr += "%s: %s\n"%("devicemodel",self.devicemodel)
-        retstr += "%s: %s\n"%("devicetype",self.devicetype)
-        retstr += "%s: %s\n"%("attrib",self.attrib)
-        retstr += "%s: %s\n"%("category",self.category)
-        retstr += "%s: %s\n"%("datajson",self.datajson)
-        retstr += "%s: %s\n"%("activityrecognitionversion",self.activityrecognitionversion)
-        retstr += "%s: %s\n"%("issyncedtows",self.issyncedtows)
-        retstr += "%s: %s\n"%("deleted",self.deleted)
-        retstr += "%s: %s\n"%("deletionreason",self.deletionreason)
-        retstr += "%s: %s\n"%("note",self.note)
-        retstr += "%s: %s\n"%("snoringenabled",self.snoringenabled)
-        retstr += "%s: %s\n"%("inprogress",self.inprogress)
-        retstr += "%s: %s\n"%("manualstartdate",time_util.prettify_epoch_time(self.manualstartdate))
-        retstr += "%s: %s\n"%("manualenddate",  time_util.prettify_epoch_time(self.manualenddate))
-        retstr += "%s: %s\n"%("blankvasistasfilled",self.blankvasistasfilled)
-        retstr += "%s: %s\n"%("pathlists",self.pathlists)
-        retstr += "%s: %s\n"%("cryptpart",self.cryptpart)
-        retstr += "%s: %s\n"%("coverpictureurl",self.coverpictureurl)
-        retstr += "%s: %s\n"%("uris",self.uris)
-        retstr += "%s: %s\n"%("coverpictureuri",self.coverpictureuri)
-        retstr += "%s: %s\n"%("sleepscorevalue",self.sleepscorevalue)
-        retstr += "%s: %s\n"%("sleepscorestatus",self.sleepscorestatus)
-        retstr += "%s: %s\n"%("sleepscorealgoversion",self.sleepscorealgoversion)
-        retstr += "%s: %s\n"%("duration_info_score",self.duration_info_score)
-        retstr += "%s: %s\n"%("duration_info_status",self.duration_info_status)
-        retstr += "%s: %s\n"%("recovery_info_score",self.recovery_info_score)
-        retstr += "%s: %s\n"%("recovery_info_status",self.recovery_info_status)
-        retstr += "%s: %s\n"%("interruptions_info_score",self.interruptions_info_score)
-        retstr += "%s: %s\n"%("interruptions_info_status",self.interruptions_info_status)
-        retstr += "%s: %s\n"%("timetofallasleep_info_score",self.timetofallasleep_info_score)
-        retstr += "%s: %s\n"%("timetofallasleep_info_status",self.timetofallasleep_info_status)
-        retstr += "%s: %s\n"%("timetowakeup_info_score",self.timetowakeup_info_score)
-        retstr += "%s: %s\n"%("timetowakeup_info_status",self.timetowakeup_info_status)
-        retstr += "%s: %s\n"%("regularity_info_score",self.regularity_info_score)
-        retstr += "%s: %s\n"%("regularity_info_status",self.regularity_info_status)
-        retstr += "%s: %s\n"%("snoring_info_score",self.snoring_info_score)
-        retstr += "%s: %s\n"%("snoring_info_status",self.snoring_info_status)
-        retstr += "%s: %s\n"%("night_heartrate_info_score",self.night_heartrate_info_score)
-        retstr += "%s: %s\n"%("night_heartrate_info_status",self.night_heartrate_info_status)
-        retstr += "%s: %s\n"%("distance",self.distance)
-        retstr += "%s: %s\n"%("averagespeed",self.averagespeed)
-        retstr += "%s: %s\n"%("minspeed",self.minspeed)
-        retstr += "%s: %s\n"%("maxspeed",self.maxspeed)
-        retstr += "%s: %s\n"%("startlatitude",self.startlatitude)
-        retstr += "%s: %s\n"%("startlongitude",self.startlongitude)
-        retstr += "%s: %s\n"%("endlatitude",self.endlatitude)
-        retstr += "%s: %s\n"%("endlongitude",self.endlongitude)
-        retstr += "%s: %s\n"%("centerlatitude",self.centerlatitude)
-        retstr += "%s: %s\n"%("centerlongitude",self.centerlongitude)
-        retstr += "%s: %s\n"%("spanlatitudedelta",self.spanlatitudedelta)
-        retstr += "%s: %s\n"%("spanlongitudedelta",self.spanlongitudedelta)
-        retstr += "%s: %s\n"%("datajson_parsed",self.datajson_parsed)
-        return retstr
+        if self.sleep:
+            retstr += "sleep ending on %s\n"%(time_util.epoch_to_yyyymmdd(self.enddate))
+            retstr += "    sleep_start: %s\n"%time_util.prettify_epoch_time(self.sleep_start)
+            retstr += "    sleep_end: %s\n"  %time_util.prettify_epoch_time(self.sleep_end)
+            retstr += "    timedelta_in_bed: %s\n"%(self.timedelta_in_bed)
+            retstr += "    timedelta_slept: %s\n"%self.timedelta_slept
+        # retstr += "%s: %s\n"%("id",self.id)
+        # retstr += "%s: %s\n"%("wsid",self.wsid)
+        # retstr += "%s: %s\n"%("userid",self.userid)
+        # retstr += "%s: %s\n"%("startdate",  time_util.prettify_epoch_time(self.startdate))
+        # retstr += "%s: %s\n"%("enddate",    time_util.prettify_epoch_time(self.enddate))
+        # retstr += "%s: %s\n"%("timezone",self.timezone)
+        # retstr += "%s: %s\n"%("day",self.day)
+        # retstr += "%s: %s\n"%("modifieddate",self.modifieddate)
+        # retstr += "%s: %s\n"%("devicemodel",self.devicemodel)
+        # retstr += "%s: %s\n"%("devicetype",self.devicetype)
+        # retstr += "%s: %s\n"%("attrib",self.attrib)
+        # retstr += "%s: %s\n"%("category",self.category)
+        # retstr += "%s: %s\n"%("datajson",self.datajson)
+        # retstr += "%s: %s\n"%("activityrecognitionversion",self.activityrecognitionversion)
+        # retstr += "%s: %s\n"%("issyncedtows",self.issyncedtows)
+        # retstr += "%s: %s\n"%("deleted",self.deleted)
+        # retstr += "%s: %s\n"%("deletionreason",self.deletionreason)
+        # retstr += "%s: %s\n"%("note",self.note)
+        # retstr += "%s: %s\n"%("snoringenabled",self.snoringenabled)
+        # retstr += "%s: %s\n"%("inprogress",self.inprogress)
+        # retstr += "%s: %s\n"%("manualstartdate",time_util.prettify_epoch_time(self.manualstartdate))
+        # retstr += "%s: %s\n"%("manualenddate",  time_util.prettify_epoch_time(self.manualenddate))
+        # retstr += "%s: %s\n"%("blankvasistasfilled",self.blankvasistasfilled)
+        # retstr += "%s: %s\n"%("pathlists",self.pathlists)
+        # retstr += "%s: %s\n"%("cryptpart",self.cryptpart)
+        # retstr += "%s: %s\n"%("coverpictureurl",self.coverpictureurl)
+        # retstr += "%s: %s\n"%("uris",self.uris)
+        # retstr += "%s: %s\n"%("coverpictureuri",self.coverpictureuri)
+        # retstr += "%s: %s\n"%("sleepscorevalue",self.sleepscorevalue)
+        # retstr += "%s: %s\n"%("sleepscorestatus",self.sleepscorestatus)
+        # retstr += "%s: %s\n"%("sleepscorealgoversion",self.sleepscorealgoversion)
+        # retstr += "%s: %s\n"%("duration_info_score",self.duration_info_score)
+        # retstr += "%s: %s\n"%("duration_info_status",self.duration_info_status)
+        # retstr += "%s: %s\n"%("recovery_info_score",self.recovery_info_score)
+        # retstr += "%s: %s\n"%("recovery_info_status",self.recovery_info_status)
+        # retstr += "%s: %s\n"%("interruptions_info_score",self.interruptions_info_score)
+        # retstr += "%s: %s\n"%("interruptions_info_status",self.interruptions_info_status)
+        # retstr += "%s: %s\n"%("timetofallasleep_info_score",self.timetofallasleep_info_score)
+        # retstr += "%s: %s\n"%("timetofallasleep_info_status",self.timetofallasleep_info_status)
+        # retstr += "%s: %s\n"%("timetowakeup_info_score",self.timetowakeup_info_score)
+        # retstr += "%s: %s\n"%("timetowakeup_info_status",self.timetowakeup_info_status)
+        # retstr += "%s: %s\n"%("regularity_info_score",self.regularity_info_score)
+        # retstr += "%s: %s\n"%("regularity_info_status",self.regularity_info_status)
+        # retstr += "%s: %s\n"%("snoring_info_score",self.snoring_info_score)
+        # retstr += "%s: %s\n"%("snoring_info_status",self.snoring_info_status)
+        # retstr += "%s: %s\n"%("night_heartrate_info_score",self.night_heartrate_info_score)
+        # retstr += "%s: %s\n"%("night_heartrate_info_status",self.night_heartrate_info_status)
+        # retstr += "%s: %s\n"%("distance",self.distance)
+        # retstr += "%s: %s\n"%("averagespeed",self.averagespeed)
+        # retstr += "%s: %s\n"%("minspeed",self.minspeed)
+        # retstr += "%s: %s\n"%("maxspeed",self.maxspeed)
+        # retstr += "%s: %s\n"%("startlatitude",self.startlatitude)
+        # retstr += "%s: %s\n"%("startlongitude",self.startlongitude)
+        # retstr += "%s: %s\n"%("endlatitude",self.endlatitude)
+        # retstr += "%s: %s\n"%("endlongitude",self.endlongitude)
+        # retstr += "%s: %s\n"%("centerlatitude",self.centerlatitude)
+        # retstr += "%s: %s\n"%("centerlongitude",self.centerlongitude)
+        # retstr += "%s: %s\n"%("spanlatitudedelta",self.spanlatitudedelta)
+        # retstr += "%s: %s\n"%("spanlongitudedelta",self.spanlongitudedelta)
+        # retstr += "%s: %s\n"%("datajson_parsed",self.datajson_parsed)
+        return retstr.strip()
 
 
 class WithingsTable(DBTable):
