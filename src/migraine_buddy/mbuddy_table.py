@@ -1,6 +1,6 @@
 from enum import IntEnum
 import sys
-sys.path.insert(0, "../util/database")
+sys.path.insert(0, "../utils/database")
 from database import *
 
 # CREATE TABLE table_entries (

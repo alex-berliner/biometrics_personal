@@ -8,10 +8,11 @@ WITHINGS_DB_NAME=room-healthmate.db
 
 LOCAL_DB_DIR=data_backings
 
+CLIENT_IP=192.168.5.112
+CLIENT_PORT=8022
 # copy app data to sdcard
-# TODO: create alias for phone IP
 # TODO: figure out how to log in as root; ssh root@<IP> logs in as user
-ssh 192.168.5.104 -p 8022 "\
+ssh $CLIENT_IP -p $CLIENT_PORT "\
     mkdir -p $SD_DB_DIR;
     su -c \"\
         cp -r $DAYLIO_DB_DIR/$DAYLIO_DB_NAME*    $SD_DB_DIR;
@@ -22,10 +23,10 @@ ssh 192.168.5.104 -p 8022 "\
 mkdir -p $LOCAL_DB_DIR
 
 mkdir -p $LOCAL_DB_DIR/daylio
-scp -v -r -P 8022 192.168.5.104:$SD_DB_DIR/$DAYLIO_DB_NAME* $LOCAL_DB_DIR/daylio/
+scp -v -r -P $CLIENT_PORT $CLIENT_IP:$SD_DB_DIR/$DAYLIO_DB_NAME* $LOCAL_DB_DIR/daylio/
 
 mkdir -p $LOCAL_DB_DIR/withings
-scp -v -r -P 8022 192.168.5.104:$SD_DB_DIR/* $LOCAL_DB_DIR/withings/
+scp -v -r -P $CLIENT_PORT $CLIENT_IP:$SD_DB_DIR/* $LOCAL_DB_DIR/withings/
 
 # remove app data from sd card
-ssh 192.168.5.104 -p 8022 "rm -rf $SD_DB_DIR"
+ssh $CLIENT_IP -p $CLIENT_PORT "rm -rf $SD_DB_DIR"

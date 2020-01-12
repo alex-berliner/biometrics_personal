@@ -4,7 +4,7 @@ import re
 import sqlite3
 from datetime import datetime, timedelta
 
-sys.path.insert(0, "../util/database")
+sys.path.insert(0, "../utils/database")
 from database import *
 
 sys.path.insert(0, "src/oop")

@@ -3,7 +3,6 @@ import sys
 
 sys.path.insert(0, "src/oop")
 from headache_event import *
-from event import *
 # from headache_daylio_event import *
 
 sys.path.insert(0, "src/migraine_buddy")
@@ -21,6 +20,6 @@ class Mbuddy():
     def connect_and_parse(self):
         conn = sqlite3.connect('data_backings/migraine_buddy/migraine.db')
         mb_cursor = conn.execute('SELECT painIntensity,startTime,endTime FROM migraineevent')
-        for row in mb_cursor:
-            print(row)
+        # for row in mb_cursor:
+        #     print(row)
         conn.close()

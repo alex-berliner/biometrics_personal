@@ -2,8 +2,8 @@ import re
 import sys
 
 sys.path.insert(0, "src/oop")
+from medication_event import *
 from headache_event import *
-from event import *
 from headache_daylio_event import *
 
 sys.path.insert(0, "src")
@@ -27,6 +27,7 @@ class DaylioParser():
         cursor = conn.cursor()
         main_entries = cursor.execute('SELECT * FROM table_entries')
         main_entries = sorted(main_entries, key=sortkey)
+        days = OrderedDict()
         for row in main_entries:
             daylio_entry = DaylioEntry(row)
             notes = daylio_entry.note.split("\n")
@@ -46,7 +47,9 @@ class DaylioParser():
                 elif re.match(self.daylio_regex_headache, lnote):
                     biometrics_context.headache += [HeadacheDaylioEvent(conv_date, note)]
                 elif "took" in lnote:
-                    biometrics_context.took_meds += [event]
+                    note = note.lower().replace("took", "")
+                    for med in note.split(","):
+                        biometrics_context.took_meds += [MedicationEvent(conv_date, med.strip())]
                 elif "migraine" in lnote:
                     biometrics_context.migraine += [event]
                 elif "mood" in lnote:
@@ -63,15 +66,15 @@ class DaylioParser():
                     biometrics_context.started_meds += [event]
                 elif "stopped" in lnote:
                     biometrics_context.stopped_meds += [event]
-                elif "exercise" in lnote\
-                or "yoga" in lnote\
-                or "soccer" in lnote\
-                or "basketball" in lnote\
-                or "snorkel" in lnote\
-                or "bike" in lnote\
-                or "elliptical" in lnote\
-                or "walk" in lnote\
-                or "hike" in lnote\
+                elif    "exercise" in lnote\
+                    or  "yoga" in lnote\
+                    or  "soccer" in lnote\
+                    or  "basketball" in lnote\
+                    or  "snorkel" in lnote\
+                    or  "bike" in lnote\
+                    or  "elliptical" in lnote\
+                    or  "walk" in lnote\
+                    or  "hike" in lnote\
                     :
                     biometrics_context.exercise += [event]
                 elif "sleepy" in lnote\

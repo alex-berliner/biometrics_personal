@@ -1,16 +1,17 @@
-import re
 import sys
-sys.path.insert(0, "src/oop")
-from event import *
+sys.path.insert(0, "../utils")
+
+import time_util
+import re
 
 # Different types
-class HeadacheDaylioEvent(Event):
+class HeadacheDaylioEvent():
     switch_time = None
 
     daylio_regex_headache = "Headache (\\<?\\d(\\.\\d*)?)"
     def __init__(self, time, note):
-        parent=super(HeadacheDaylioEvent, self)
-        parent.__init__(time, note)
+        self.time = time
+        self.note = note
         self.intensity = None
 
     # Scale old headache scale (0-10) to new headache scale (0-5)
@@ -19,6 +20,13 @@ class HeadacheDaylioEvent(Event):
         for s in scale:
             if intensity > s[0]:
                 return s[1]
+
+    def __str__(self):
+        return "%s: %s"%(time_util.epoch_to_md_hm(self.time), self.note)
+
+    def to_csv(self):
+        # convert 0-5 scale to %
+        return self.time, 100-(10*2*float(self.intensity))
 
     # convert headache data into new format
     def process(self):

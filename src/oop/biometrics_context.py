@@ -1,3 +1,5 @@
+import csv
+
 # Data holder to be added to by all data backends
 class BiometricsContext():
     def __init__(self):
@@ -36,3 +38,28 @@ class BiometricsContext():
         for event_list in self.event_types:
             for event in event_list:
                 event.process()
+
+    def output_headache_csv(self, outpath):
+        writepath = outpath + "headache.csv"
+        csvfile = open(writepath, "w", newline='')
+        spamwriter = csv.writer(csvfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+        # print(writepath)
+        spamwriter.writerow(["time", "rating"])
+        for headache_event in self.headache:
+            headache_event.process()
+            spamwriter.writerow(headache_event.to_csv())
+
+    def output_meds_csv(self, outpath):
+        # import csv
+        writepath = outpath + "medicine.csv"
+        csvfile = open(writepath, "w", newline='')
+        spamwriter = csv.writer(csvfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+        spamwriter.writerow(["time", "medication"])
+        types = {}
+        for med_event in self.took_meds:
+            # print(med_event)
+            spamwriter.writerow(med_event.to_csv())
+            if med_event.note not in types:
+                types[med_event.note] = 0
+            types[med_event.note] += 1
+        # print(types)

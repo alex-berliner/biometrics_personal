@@ -1,27 +1,22 @@
-import time
-from enum import IntEnum
-import sys
-sys.path.insert(0, "../util")
-import time_util
-sys.path.insert(0, "../util/database")
-from database import *
-import json
 from collections import OrderedDict
 from datetime import timedelta
-# CREATE TABLE table_entries (
-# id INTEGER PRIMARY KEY AUTOINCREMENT
-# minute INTEGER
-# hour INTEGER
-# day INTEGER
-# month INTEGER
-# year INTEGER
-# date_time INTEGER
-# time_zone_offset INTEGER
-# mood INTEGER
-# note TEXT
+from enum import IntEnum
+import json
+import sys
+import time
 
-class WithingsEntry():
-    class WithingsFields(IntEnum):
+sys.path.insert(0, "../utils")
+import time_util
+
+sys.path.insert(0, "../utils/database")
+from database import *
+
+sys.path.insert(0, "src/oop")
+from sleep_event import *
+from sleep_table import *
+
+class WithingsSleepEvent(SleepEvent):
+    class WithingsTrackFields(IntEnum):
         ID=0
         WSID=1
         USERID=2
@@ -82,79 +77,77 @@ class WithingsEntry():
         SPANLATITUDEDELTA=57
         SPANLONGITUDEDELTA=58
 
-    def set_fields_from_tuple(self, withings_tuple):
+    def set_fields_from_track_tuple(self, track_tuple):
         # TODO there has to be a better way to do this
-        self.id=withings_tuple[self.WithingsFields.ID]
-        self.wsid=withings_tuple[self.WithingsFields.WSID]
-        self.userid=withings_tuple[self.WithingsFields.USERID]
-        self.startdate=withings_tuple[self.WithingsFields.STARTDATE]
-        self.enddate=withings_tuple[self.WithingsFields.ENDDATE]
-        self.timezone=withings_tuple[self.WithingsFields.TIMEZONE]
-        self.day=withings_tuple[self.WithingsFields.DAY]
-        self.modifieddate=withings_tuple[self.WithingsFields.MODIFIEDDATE]
-        self.devicemodel=withings_tuple[self.WithingsFields.DEVICEMODEL]
-        self.devicetype=withings_tuple[self.WithingsFields.DEVICETYPE]
-        self.attrib=withings_tuple[self.WithingsFields.ATTRIB]
-        self.category=withings_tuple[self.WithingsFields.CATEGORY]
-        self.datajson=withings_tuple[self.WithingsFields.DATAJSON]
-        self.activityrecognitionversion=withings_tuple[self.WithingsFields.ACTIVITYRECOGNITIONVERSION]
-        self.issyncedtows=withings_tuple[self.WithingsFields.ISSYNCEDTOWS]
-        self.deleted=withings_tuple[self.WithingsFields.DELETED]
-        self.deletionreason=withings_tuple[self.WithingsFields.DELETIONREASON]
-        self.note=withings_tuple[self.WithingsFields.NOTE]
-        self.snoringenabled=withings_tuple[self.WithingsFields.SNORINGENABLED]
-        self.inprogress=withings_tuple[self.WithingsFields.INPROGRESS]
-        self.manualstartdate=withings_tuple[self.WithingsFields.MANUALSTARTDATE]
-        self.manualenddate=withings_tuple[self.WithingsFields.MANUALENDDATE]
-        self.blankvasistasfilled=withings_tuple[self.WithingsFields.BLANKVASISTASFILLED]
-        self.pathlists=withings_tuple[self.WithingsFields.PATHLISTS]
-        self.cryptpart=withings_tuple[self.WithingsFields.CRYPTPART]
-        self.coverpictureurl=withings_tuple[self.WithingsFields.COVERPICTUREURL]
-        self.uris=withings_tuple[self.WithingsFields.URIS]
-        self.coverpictureuri=withings_tuple[self.WithingsFields.COVERPICTUREURI]
-        self.sleepscorevalue=withings_tuple[self.WithingsFields.SLEEPSCOREVALUE]
-        self.sleepscorestatus=withings_tuple[self.WithingsFields.SLEEPSCORESTATUS]
-        self.sleepscorealgoversion=withings_tuple[self.WithingsFields.SLEEPSCOREALGOVERSION]
-        self.duration_info_score=withings_tuple[self.WithingsFields.DURATION_INFO_SCORE]
-        self.duration_info_status=withings_tuple[self.WithingsFields.DURATION_INFO_STATUS]
-        self.recovery_info_score=withings_tuple[self.WithingsFields.RECOVERY_INFO_SCORE]
-        self.recovery_info_status=withings_tuple[self.WithingsFields.RECOVERY_INFO_STATUS]
-        self.interruptions_info_score=withings_tuple[self.WithingsFields.INTERRUPTIONS_INFO_SCORE]
-        self.interruptions_info_status=withings_tuple[self.WithingsFields.INTERRUPTIONS_INFO_STATUS]
-        self.timetofallasleep_info_score=withings_tuple[self.WithingsFields.TIMETOFALLASLEEP_INFO_SCORE]
-        self.timetofallasleep_info_status=withings_tuple[self.WithingsFields.TIMETOFALLASLEEP_INFO_STATUS]
-        self.timetowakeup_info_score=withings_tuple[self.WithingsFields.TIMETOWAKEUP_INFO_SCORE]
-        self.timetowakeup_info_status=withings_tuple[self.WithingsFields.TIMETOWAKEUP_INFO_STATUS]
-        self.regularity_info_score=withings_tuple[self.WithingsFields.REGULARITY_INFO_SCORE]
-        self.regularity_info_status=withings_tuple[self.WithingsFields.REGULARITY_INFO_STATUS]
-        self.snoring_info_score=withings_tuple[self.WithingsFields.SNORING_INFO_SCORE]
-        self.snoring_info_status=withings_tuple[self.WithingsFields.SNORING_INFO_STATUS]
-        self.night_heartrate_info_score=withings_tuple[self.WithingsFields.NIGHT_HEARTRATE_INFO_SCORE]
-        self.night_heartrate_info_status=withings_tuple[self.WithingsFields.NIGHT_HEARTRATE_INFO_STATUS]
-        self.distance=withings_tuple[self.WithingsFields.DISTANCE]
-        self.averagespeed=withings_tuple[self.WithingsFields.AVERAGESPEED]
-        self.minspeed=withings_tuple[self.WithingsFields.MINSPEED]
-        self.maxspeed=withings_tuple[self.WithingsFields.MAXSPEED]
-        self.startlatitude=withings_tuple[self.WithingsFields.STARTLATITUDE]
-        self.startlongitude=withings_tuple[self.WithingsFields.STARTLONGITUDE]
-        self.endlatitude=withings_tuple[self.WithingsFields.ENDLATITUDE]
-        self.endlongitude=withings_tuple[self.WithingsFields.ENDLONGITUDE]
-        self.centerlatitude=withings_tuple[self.WithingsFields.CENTERLATITUDE]
-        self.centerlongitude=withings_tuple[self.WithingsFields.CENTERLONGITUDE]
-        self.spanlatitudedelta=withings_tuple[self.WithingsFields.SPANLATITUDEDELTA]
-        self.spanlongitudedelta=withings_tuple[self.WithingsFields.SPANLONGITUDEDELTA]
+        self.id=track_tuple[self.WithingsTrackFields.ID]
+        self.wsid=track_tuple[self.WithingsTrackFields.WSID]
+        self.userid=track_tuple[self.WithingsTrackFields.USERID]
+        self.startdate=track_tuple[self.WithingsTrackFields.STARTDATE]
+        self.enddate=track_tuple[self.WithingsTrackFields.ENDDATE]
+        self.timezone=track_tuple[self.WithingsTrackFields.TIMEZONE]
+        self.day=track_tuple[self.WithingsTrackFields.DAY]
+        self.modifieddate=track_tuple[self.WithingsTrackFields.MODIFIEDDATE]
+        self.devicemodel=track_tuple[self.WithingsTrackFields.DEVICEMODEL]
+        self.devicetype=track_tuple[self.WithingsTrackFields.DEVICETYPE]
+        self.attrib=track_tuple[self.WithingsTrackFields.ATTRIB]
+        self.category=track_tuple[self.WithingsTrackFields.CATEGORY]
+        self.datajson=track_tuple[self.WithingsTrackFields.DATAJSON]
+        self.activityrecognitionversion=track_tuple[self.WithingsTrackFields.ACTIVITYRECOGNITIONVERSION]
+        self.issyncedtows=track_tuple[self.WithingsTrackFields.ISSYNCEDTOWS]
+        self.deleted=track_tuple[self.WithingsTrackFields.DELETED]
+        self.deletionreason=track_tuple[self.WithingsTrackFields.DELETIONREASON]
+        self.note=track_tuple[self.WithingsTrackFields.NOTE]
+        self.snoringenabled=track_tuple[self.WithingsTrackFields.SNORINGENABLED]
+        self.inprogress=track_tuple[self.WithingsTrackFields.INPROGRESS]
+        self.manualstartdate=track_tuple[self.WithingsTrackFields.MANUALSTARTDATE]
+        self.manualenddate=track_tuple[self.WithingsTrackFields.MANUALENDDATE]
+        self.blankvasistasfilled=track_tuple[self.WithingsTrackFields.BLANKVASISTASFILLED]
+        self.pathlists=track_tuple[self.WithingsTrackFields.PATHLISTS]
+        self.cryptpart=track_tuple[self.WithingsTrackFields.CRYPTPART]
+        self.coverpictureurl=track_tuple[self.WithingsTrackFields.COVERPICTUREURL]
+        self.uris=track_tuple[self.WithingsTrackFields.URIS]
+        self.coverpictureuri=track_tuple[self.WithingsTrackFields.COVERPICTUREURI]
+        self.sleepscorevalue=track_tuple[self.WithingsTrackFields.SLEEPSCOREVALUE]
+        self.sleepscorestatus=track_tuple[self.WithingsTrackFields.SLEEPSCORESTATUS]
+        self.sleepscorealgoversion=track_tuple[self.WithingsTrackFields.SLEEPSCOREALGOVERSION]
+        self.duration_info_score=track_tuple[self.WithingsTrackFields.DURATION_INFO_SCORE]
+        self.duration_info_status=track_tuple[self.WithingsTrackFields.DURATION_INFO_STATUS]
+        self.recovery_info_score=track_tuple[self.WithingsTrackFields.RECOVERY_INFO_SCORE]
+        self.recovery_info_status=track_tuple[self.WithingsTrackFields.RECOVERY_INFO_STATUS]
+        self.interruptions_info_score=track_tuple[self.WithingsTrackFields.INTERRUPTIONS_INFO_SCORE]
+        self.interruptions_info_status=track_tuple[self.WithingsTrackFields.INTERRUPTIONS_INFO_STATUS]
+        self.timetofallasleep_info_score=track_tuple[self.WithingsTrackFields.TIMETOFALLASLEEP_INFO_SCORE]
+        self.timetofallasleep_info_status=track_tuple[self.WithingsTrackFields.TIMETOFALLASLEEP_INFO_STATUS]
+        self.timetowakeup_info_score=track_tuple[self.WithingsTrackFields.TIMETOWAKEUP_INFO_SCORE]
+        self.timetowakeup_info_status=track_tuple[self.WithingsTrackFields.TIMETOWAKEUP_INFO_STATUS]
+        self.regularity_info_score=track_tuple[self.WithingsTrackFields.REGULARITY_INFO_SCORE]
+        self.regularity_info_status=track_tuple[self.WithingsTrackFields.REGULARITY_INFO_STATUS]
+        self.snoring_info_score=track_tuple[self.WithingsTrackFields.SNORING_INFO_SCORE]
+        self.snoring_info_status=track_tuple[self.WithingsTrackFields.SNORING_INFO_STATUS]
+        self.night_heartrate_info_score=track_tuple[self.WithingsTrackFields.NIGHT_HEARTRATE_INFO_SCORE]
+        self.night_heartrate_info_status=track_tuple[self.WithingsTrackFields.NIGHT_HEARTRATE_INFO_STATUS]
+        self.distance=track_tuple[self.WithingsTrackFields.DISTANCE]
+        self.averagespeed=track_tuple[self.WithingsTrackFields.AVERAGESPEED]
+        self.minspeed=track_tuple[self.WithingsTrackFields.MINSPEED]
+        self.maxspeed=track_tuple[self.WithingsTrackFields.MAXSPEED]
+        self.startlatitude=track_tuple[self.WithingsTrackFields.STARTLATITUDE]
+        self.startlongitude=track_tuple[self.WithingsTrackFields.STARTLONGITUDE]
+        self.endlatitude=track_tuple[self.WithingsTrackFields.ENDLATITUDE]
+        self.endlongitude=track_tuple[self.WithingsTrackFields.ENDLONGITUDE]
+        self.centerlatitude=track_tuple[self.WithingsTrackFields.CENTERLATITUDE]
+        self.centerlongitude=track_tuple[self.WithingsTrackFields.CENTERLONGITUDE]
+        self.spanlatitudedelta=track_tuple[self.WithingsTrackFields.SPANLATITUDEDELTA]
+        self.spanlongitudedelta=track_tuple[self.WithingsTrackFields.SPANLONGITUDEDELTA]
         self.datajson_parsed = json.loads(self.datajson)
-    counter = 0
-
-    def __init__(self, withings_tuple):
+    def parse_fields_from_track_tuple(self, track_tuple):
         def to_timedelta(key):
             if key in self.datajson_parsed:
                 return timedelta(seconds=(int(self.datajson_parsed[key])/1000))
             else:
                 return timedelta(0)
-
-        self.set_fields_from_tuple(withings_tuple)
         self.sleep = False
+
+        self.set_fields_from_track_tuple(track_tuple)
 
         sleep_sum = 0
         if "lightSleepDuration" in self.datajson_parsed:
@@ -177,93 +170,107 @@ class WithingsEntry():
             self.sleep_start = int(self.startdate)/1000
             self.sleep_end = int(self.enddate)/1000+self.manual_sleep_duration.seconds
 
-            # wake_up_duration      = to_timedelta("wakeUpDuration")
-            # duration_to_sleep     = to_timedelta("durationToSleep")
-            # duration_to_get_up    = to_timedelta("durationToGetUp")
-            # wake_up_count         = self.datajson_parsed["wakeUpCount"]
             self.timedelta_in_bed = timedelta(seconds=(self.sleep_end-self.sleep_start))
             self.timedelta_slept = self.manual_sleep_duration + self.light_sleep_duration + self.deep_sleep_duration + self.rem_sleep_duration
 
+    def __init__(self, track_tuple):
+        self.parse_fields_from_track_tuple(track_tuple)
+        if self.sleep:
+            parent=super(WithingsSleepEvent, self)
+            parent.__init__(self.sleep_start, self.sleep_end, self.timedelta_slept)
 
-        # typecat = "".join(list(self.datajson_parsed.keys()))
+    def get_yyyymmdd(self):
+        return time_util.epoch_to_yyyymmdd(self.enddate)
+
+class WithingsEntry():
+    class WithingsTimelineFields(IntEnum):
+        ID = 0
+        USER = 1
+        TIMESTAMP = 2
+        TYPE = 3
+        CUSTOMID = 4
+        DATA = 5
+        DELETED = 6
+        EXPIRATIONDATE = 7
+        SECTIONTAGS = 8
+
+    def set_fields_from_timeline_tuple(self, timeline_tuple):
+        pass
+
+    def parse_fields_from_timeline_tuple(self, timeline_tuple):
+        self.set_fields_from_timeline_tuple(timeline_tuple)
+        ID = 0 # 28,
+        USER = 1 # 19711056,
+        TIMESTAMP = 2 # 1571509180000,
+        TYPE = 3 # 'measure',
+        CUSTOMID = 4 # '7',
+        DATA = 5 # '{"measureGroupId":15,"measures":[{"y":93.0,"type":9},{"y":125.0,"type":10},{"y":93.0,"type":11}]}'
+        DELETED = 6 # 0,
+        EXPIRATIONDATE = 7 # 0,
+        SECTIONTAGS = 8 # ''
+
+
+    def __init__(self, timeline_tuple=None):
+        if timeline_tuple:
+            self.parse_fields_from_timeline_tuple(timeline_tuple)
+
+    # def parse_track(self, )
 
     def __str__(self):
-        retstr = ""
-        if self.sleep:
-            retstr += "sleep ending on %s\n"%(time_util.epoch_to_yyyymmdd(self.enddate))
-            retstr += "    sleep_start: %s\n"%time_util.prettify_epoch_time(self.sleep_start)
-            retstr += "    sleep_end: %s\n"  %time_util.prettify_epoch_time(self.sleep_end)
-            retstr += "    timedelta_in_bed: %s\n"%(self.timedelta_in_bed)
-            retstr += "    timedelta_slept: %s\n"%self.timedelta_slept
-        # retstr += "%s: %s\n"%("id",self.id)
-        # retstr += "%s: %s\n"%("wsid",self.wsid)
-        # retstr += "%s: %s\n"%("userid",self.userid)
-        # retstr += "%s: %s\n"%("startdate",  time_util.prettify_epoch_time(self.startdate))
-        # retstr += "%s: %s\n"%("enddate",    time_util.prettify_epoch_time(self.enddate))
-        # retstr += "%s: %s\n"%("timezone",self.timezone)
-        # retstr += "%s: %s\n"%("day",self.day)
-        # retstr += "%s: %s\n"%("modifieddate",self.modifieddate)
-        # retstr += "%s: %s\n"%("devicemodel",self.devicemodel)
-        # retstr += "%s: %s\n"%("devicetype",self.devicetype)
-        # retstr += "%s: %s\n"%("attrib",self.attrib)
-        # retstr += "%s: %s\n"%("category",self.category)
-        # retstr += "%s: %s\n"%("datajson",self.datajson)
-        # retstr += "%s: %s\n"%("activityrecognitionversion",self.activityrecognitionversion)
-        # retstr += "%s: %s\n"%("issyncedtows",self.issyncedtows)
-        # retstr += "%s: %s\n"%("deleted",self.deleted)
-        # retstr += "%s: %s\n"%("deletionreason",self.deletionreason)
-        # retstr += "%s: %s\n"%("note",self.note)
-        # retstr += "%s: %s\n"%("snoringenabled",self.snoringenabled)
-        # retstr += "%s: %s\n"%("inprogress",self.inprogress)
-        # retstr += "%s: %s\n"%("manualstartdate",time_util.prettify_epoch_time(self.manualstartdate))
-        # retstr += "%s: %s\n"%("manualenddate",  time_util.prettify_epoch_time(self.manualenddate))
-        # retstr += "%s: %s\n"%("blankvasistasfilled",self.blankvasistasfilled)
-        # retstr += "%s: %s\n"%("pathlists",self.pathlists)
-        # retstr += "%s: %s\n"%("cryptpart",self.cryptpart)
-        # retstr += "%s: %s\n"%("coverpictureurl",self.coverpictureurl)
-        # retstr += "%s: %s\n"%("uris",self.uris)
-        # retstr += "%s: %s\n"%("coverpictureuri",self.coverpictureuri)
-        # retstr += "%s: %s\n"%("sleepscorevalue",self.sleepscorevalue)
-        # retstr += "%s: %s\n"%("sleepscorestatus",self.sleepscorestatus)
-        # retstr += "%s: %s\n"%("sleepscorealgoversion",self.sleepscorealgoversion)
-        # retstr += "%s: %s\n"%("duration_info_score",self.duration_info_score)
-        # retstr += "%s: %s\n"%("duration_info_status",self.duration_info_status)
-        # retstr += "%s: %s\n"%("recovery_info_score",self.recovery_info_score)
-        # retstr += "%s: %s\n"%("recovery_info_status",self.recovery_info_status)
-        # retstr += "%s: %s\n"%("interruptions_info_score",self.interruptions_info_score)
-        # retstr += "%s: %s\n"%("interruptions_info_status",self.interruptions_info_status)
-        # retstr += "%s: %s\n"%("timetofallasleep_info_score",self.timetofallasleep_info_score)
-        # retstr += "%s: %s\n"%("timetofallasleep_info_status",self.timetofallasleep_info_status)
-        # retstr += "%s: %s\n"%("timetowakeup_info_score",self.timetowakeup_info_score)
-        # retstr += "%s: %s\n"%("timetowakeup_info_status",self.timetowakeup_info_status)
-        # retstr += "%s: %s\n"%("regularity_info_score",self.regularity_info_score)
-        # retstr += "%s: %s\n"%("regularity_info_status",self.regularity_info_status)
-        # retstr += "%s: %s\n"%("snoring_info_score",self.snoring_info_score)
-        # retstr += "%s: %s\n"%("snoring_info_status",self.snoring_info_status)
-        # retstr += "%s: %s\n"%("night_heartrate_info_score",self.night_heartrate_info_score)
-        # retstr += "%s: %s\n"%("night_heartrate_info_status",self.night_heartrate_info_status)
-        # retstr += "%s: %s\n"%("distance",self.distance)
-        # retstr += "%s: %s\n"%("averagespeed",self.averagespeed)
-        # retstr += "%s: %s\n"%("minspeed",self.minspeed)
-        # retstr += "%s: %s\n"%("maxspeed",self.maxspeed)
-        # retstr += "%s: %s\n"%("startlatitude",self.startlatitude)
-        # retstr += "%s: %s\n"%("startlongitude",self.startlongitude)
-        # retstr += "%s: %s\n"%("endlatitude",self.endlatitude)
-        # retstr += "%s: %s\n"%("endlongitude",self.endlongitude)
-        # retstr += "%s: %s\n"%("centerlatitude",self.centerlatitude)
-        # retstr += "%s: %s\n"%("centerlongitude",self.centerlongitude)
-        # retstr += "%s: %s\n"%("spanlatitudedelta",self.spanlatitudedelta)
-        # retstr += "%s: %s\n"%("spanlongitudedelta",self.spanlongitudedelta)
-        # retstr += "%s: %s\n"%("datajson_parsed",self.datajson_parsed)
-        return retstr.strip()
+        pass
 
 
-class WithingsTable(DBTable):
-    def __init__(self):
-        self.TABLE_NAME  = "WITHINGS_ENTRIES"
-        fields = [\
-            # Auction scan counter
-            DBField("ID",     "INTEGER", True),
-        ]
-        parent=super(WithingsTable, self)
-        parent.__init__(self.TABLE_NAME, fields)
+# class WithingsSleepTable(DBTable):
+#     def __init__(self):
+#         pass
+
+# class WithingsHeartTable(DBTable):
+#     def __init__(self):
+#         self.TABLE_NAME  = "ENTRIES"
+#         fields = [\
+#             # Auction scan counter
+#             DBField("ID",     "INTEGER", True),
+#         ]
+#         parent=super(WithingsTable, self)
+#         parent.__init__(self.TABLE_NAME, fields)
+#     def __init__(self):
+#         self.TABLE_NAME  = "ENTRIES"
+#         fields = [\
+#             # Auction scan counter
+#             DBField("ID",     "INTEGER", True),
+#         ]
+#         parent=super(WithingsTable, self)
+#         parent.__init__(self.TABLE_NAME, fields)
+
+
+# class WithingsTable(DBTable):
+#     def __init__(self):
+#         self.TABLE_NAME  = "ENTRIES"
+#         fields = [\
+#             # Auction scan counter
+#             DBField("ID",     "INTEGER", True),
+#         ]
+#         parent=super(WithingsTable, self)
+#         parent.__init__(self.TABLE_NAME, fields)
+
+#         self.entries = {}
+
+#     def add_entry(self, track_tuple=None, timeline_tuple=None):
+#         if track_tuple:
+#             entry = WithingsEntry(track_tuple=track_tuple)
+#             date = entry.get_yyyymmdd()
+#             if date not in self.entries:
+#                 self.entries[date] = entry
+#             else:
+#                 entry = self.entries[date]
+#                 entry.parse_fields_from_track_tuple(track_tuple)
+#         if timeline_tuple:
+#             entry = WithingsEntry(timeline_tuple=timeline_tuple)
+#             date = entry.get_yyyymmdd()
+#             if date not in self.entries:
+#                 self.entries[date] = entry
+#             else:
+#                 entry = self.entries[date]
+#                 entry.parse_fields_from_timeline_tuple(timeline_tuple)
+
+#         return self.entries[date]
