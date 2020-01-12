@@ -4,10 +4,13 @@ import sys
 
 sys.path.insert(0, "src/oop")
 from biometrics_context import *
+
 sys.path.insert(0, "src/daylio")
 from daylio_parser import *
+
 sys.path.insert(0, "src/migraine_buddy")
 from mbuddy_parser import *
+
 sys.path.insert(0, "src/withings")
 from withings_parser import *
 
@@ -25,8 +28,9 @@ def main():
 
     biometrics_conn = sqlite3.connect('biometrics.db')
 
-    wparser = WithingsParser()
-    wparser.connect_and_parse(biometrics_conn)
+    # TODO fix failure on finding Track field
+    # wparser = WithingsParser()
+    # wparser.connect_and_parse(biometrics_conn)
 
     biometrics_conn.commit()
     biometrics_conn.close()

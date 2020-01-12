@@ -16,7 +16,6 @@ class DaylioParser():
     daylio_regex_headache = "headache (\\<?\\d(\\.?\\d)?)".lower()
     daylio_regex_neck     = "neck pain (\\<?\\d(\\.?\\d)?)".lower()
     daylio_text_new_scale = "start new headache scale"
-    # drugs = ["aimovig", "tylenol", "maxalt", "caffiene", "advil", "gralise", "gabapentin"]
 
     def __init__(self):
         pass

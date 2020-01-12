@@ -41,6 +41,9 @@ class DatabaseScriptConverter:
 
 database_migraine_buddy = DatabaseScriptConverter("data_backings/migraine_buddy", "migraine.db",        "migraine_buddy")
 database_daylio         = DatabaseScriptConverter("data_backings/daylio",         "entries.db",         "daylio")
+database_withings       = DatabaseScriptConverter("data_backings/withings",       "room-healthmate.db", "withings")
+database_withings       = DatabaseScriptConverter("data_backings/withings",       "androidx.work.workdb", "androidx.work.workdb")
+database_withings       = DatabaseScriptConverter("data_backings/withings",       "google_app_measurement_local.db", "google_app_measurement_local.db")
 database_withings       = DatabaseScriptConverter("data_backings/withings",       "Withings-WiScale", "Withings-WiScale")
 
 dbs = \

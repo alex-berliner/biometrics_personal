@@ -43,23 +43,23 @@ class BiometricsContext():
         writepath = outpath + "headache.csv"
         csvfile = open(writepath, "w", newline='')
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
-        # print(writepath)
-        spamwriter.writerow(["time", "rating"])
+        csv_lines = []
         for headache_event in self.headache:
             headache_event.process()
-            spamwriter.writerow(headache_event.to_csv())
+            csv_lines += [headache_event.to_csv()]
+        csv_lines.sort()
+        spamwriter.writerow(["time", "rating"])
+        for line in csv_lines:
+            spamwriter.writerow(line)
 
     def output_meds_csv(self, outpath):
-        # import csv
         writepath = outpath + "medicine.csv"
         csvfile = open(writepath, "w", newline='')
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(["time", "medication"])
         types = {}
         for med_event in self.took_meds:
-            # print(med_event)
             spamwriter.writerow(med_event.to_csv())
             if med_event.note not in types:
                 types[med_event.note] = 0
             types[med_event.note] += 1
-        # print(types)
