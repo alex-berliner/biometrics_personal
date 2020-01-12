@@ -2,8 +2,7 @@ while getopts ":h" opt; do
   case ${opt} in
     h )
       echo "Usage:"
-      echo "    pip -h                      Display this help message."
-      echo "    pip install <package>       Install <package>."
+      echo "-d: pull dbs from device"
       exit 0
       ;;
    d )
