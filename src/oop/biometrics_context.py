@@ -57,9 +57,17 @@ class BiometricsContext():
         csvfile = open(writepath, "w", newline='')
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(["time", "medication"])
+
         types = {}
+        csv_lines = []
+
         for med_event in self.took_meds:
-            spamwriter.writerow(med_event.to_csv())
+            csv_lines += [med_event.to_csv()]
             if med_event.note not in types:
                 types[med_event.note] = 0
             types[med_event.note] += 1
+
+        csv_lines.sort()
+
+        for line in csv_lines:
+            spamwriter.writerow(line)

@@ -6,7 +6,7 @@ CREATE TABLE table_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, minute INTEGER
 INSERT INTO table_entries VALUES(1,0,8,11,0,2020,1578747602295,-18000000,3,'Headache 0.85');
 INSERT INTO table_entries VALUES(2,30,15,10,0,2020,1578688220391,-18000000,3,replace('Headache 1.5\nTook maxalt\nTook Tylenol','\n',char(10)));
 INSERT INTO table_entries VALUES(3,0,8,10,0,2020,1578661215405,-18000000,3,'Headache 0.85');
-INSERT INTO table_entries VALUES(4,30,17,9,0,2020,1578609046852,-18000000,3,replace('Headache 1\nMigraine 0','\n',char(10)));
+INSERT INTO table_entries VALUES(4,30,17,9,0,2020,1578609046852,-18000000,3,replace('Headache 1\nMigraine 0\nTook aimovig 140','\n',char(10)));
 INSERT INTO table_entries VALUES(5,0,12,9,0,2020,1578589254302,-18000000,3,replace('Headache 1.25\nTook maxalt\nTook Tylenol','\n',char(10)));
 INSERT INTO table_entries VALUES(6,0,8,9,0,2020,1578574801358,-18000000,3,'Headache 1.1');
 INSERT INTO table_entries VALUES(7,0,16,8,0,2020,1578517216144,-18000000,3,replace('Headache 1.15\nMigraine 0','\n',char(10)));

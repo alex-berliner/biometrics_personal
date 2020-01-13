@@ -4,3 +4,4 @@ __pycache__
 *.workdb*
 *.api
 *.code-workspace
+*Withings-WiScale

@@ -25,7 +25,7 @@ class MedicationEvent():
             .replace("sumatriptan injectable 3mg", "sumatriptan injectable")\
             .replace("tylenol 500mg", "tylenol")\
             .replace("tylenol 500 mg", "tylenol")\
-# 1552136459
+
     def __str__(self):
         return "%s: %s"%(time_util.epoch_to_yyyy_mm_dd(self.time), self.note)
 
