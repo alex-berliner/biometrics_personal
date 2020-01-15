@@ -1136,6 +1136,15 @@ INSERT INTO table_entries VALUES(1130,12,17,24,6,2018,1532466747223,-14400000,5,
 INSERT INTO table_entries VALUES(1131,0,13,24,6,2018,1532451612155,-14400000,4,replace('Took Tylenol 500 mg\nHeadache 4','\n',char(10)));
 INSERT INTO table_entries VALUES(1132,0,16,11,0,2020,1578776404738,-18000000,3,replace('Headache 1.2\nTook maxalt','\n',char(10)));
 INSERT INTO table_entries VALUES(1133,0,8,12,0,2020,1578834044856,-18000000,3,'Headache 1.05');
+INSERT INTO table_entries VALUES(1134,0,8,13,0,2020,1578920454083,-18000000,3,'Headache 0.75');
+INSERT INTO table_entries VALUES(1135,0,12,13,0,2020,1578934807502,-18000000,3,'Headache 1.25');
+INSERT INTO table_entries VALUES(1136,0,13,13,0,2020,1578938430028,-18000000,3,'Took maxalt');
+INSERT INTO table_entries VALUES(1137,0,15,13,0,2020,1578945658801,-18000000,3,'Headache 1.1');
+INSERT INTO table_entries VALUES(1138,0,8,14,0,2020,1579006851068,-18000000,3,'Headache 0.75');
+INSERT INTO table_entries VALUES(1139,0,12,14,0,2020,1579021207999,-18000000,3,'Headache 1.1');
+INSERT INTO table_entries VALUES(1140,12,15,14,0,2020,1579032765498,-18000000,3,'Headache 1.3');
+INSERT INTO table_entries VALUES(1141,0,16,14,0,2020,1579035647221,-18000000,3,replace('Headache 1.5\nMigraine 1.5','\n',char(10)));
+INSERT INTO table_entries VALUES(1142,23,18,14,0,2020,1579044183277,-18000000,3,'Took tosymra');
 CREATE TABLE table_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, icon INTEGER, created_at INTEGER, order_number INTEGER, state INTEGER, id_tag_group INTEGER );
 INSERT INTO table_tags VALUES(14,'Medicine',64,1532613728135,78310928,0,0);
 INSERT INTO table_tags VALUES(15,'relax',9,1532466747129,2,0,0);
@@ -1500,7 +1509,7 @@ CREATE TABLE table_goals (id INTEGER PRIMARY KEY AUTOINCREMENT, goal_id INTEGER,
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('table_tags',23);
 INSERT INTO sqlite_sequence VALUES('table_moods',5);
-INSERT INTO sqlite_sequence VALUES('table_entries',1133);
+INSERT INTO sqlite_sequence VALUES('table_entries',1142);
 CREATE INDEX id_entry_index ON table_entries_with_tags(id_entry);
 CREATE INDEX id_tag_index ON table_entries_with_tags(id_tag);
 COMMIT;

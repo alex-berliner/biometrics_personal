@@ -1,4 +1,4 @@
-while getopts ":h" opt; do
+while getopts ":hd" opt; do
   case ${opt} in
     h )
       echo "Usage:"
@@ -7,6 +7,7 @@ while getopts ":h" opt; do
       ;;
    d )
       # retrieve databases from phone via ssh
+      echo "pulling dbs"
       ./scripts/pull_dbs.sh
      ;;
   esac
