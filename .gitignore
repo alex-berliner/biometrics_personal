@@ -5,3 +5,5 @@ __pycache__
 *.api
 *.code-workspace
 *Withings-WiScale
+*.events
+*.events-journal

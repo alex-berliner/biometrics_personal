@@ -8,7 +8,7 @@ import re
 class HeadacheDaylioEvent():
     switch_time = None
 
-    daylio_regex_headache = "Headache (\\<?\\d(\\.\\d*)?)"
+    daylio_regex_headache = "headache (\\<?\\d(\\.\\d*)?)"
     def __init__(self, time, note):
         self.time = time
         self.note = note
@@ -33,8 +33,9 @@ class HeadacheDaylioEvent():
         if self.switch_time is None:
             print("Headache switch time was not set!")
             exit()
-        intensity_regex = re.match(self.daylio_regex_headache, self.note)
+        intensity_regex = re.match(self.daylio_regex_headache, self.note.lower())
         if not intensity_regex:
+            print(self.note)
             print("Encountered bad headache event: %s"%self)
             exit()
         intensity_raw = float(intensity_regex.group(1).replace("<1","0.5"))

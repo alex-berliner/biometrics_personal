@@ -36,6 +36,7 @@ class DaylioParser():
                     pass
                 conv_date = int(int(daylio_entry.date_time)/1000)
                 event = Event(conv_date, note)
+                # print(event.start)
 
                 # Special case for headaches: scale was switched from 1-10 to 0-5, must convert
                 # old entries based on conversion date marker
