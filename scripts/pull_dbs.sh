@@ -8,7 +8,7 @@ WITHINGS_DB_NAME=room-healthmate.db
 
 LOCAL_DB_DIR=data_backings
 
-CLIENT_IP=192.168.1.29
+CLIENT_IP=192.168.5.102
 CLIENT_PORT=8022
 # copy app data to sdcard
 # TODO: figure out how to log in as root; ssh root@<IP> logs in as user
