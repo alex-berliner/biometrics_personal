@@ -1,18 +1,26 @@
+import re
 from datetime import datetime
-
 import csv
 import pandas as pd
-# filename =
-f = pd.read_csv("../biometrics_personal/data_backings/daylio_csv/daylio_export_2020_11_14.csv")
-# print(f)
+import os
+
+def headache_scale(intensity):
+    mapping = [ [5,5], [3,4], [2,3], [1,2], [0,1], [-1,0] ]
+    for s in mapping:
+        if intensity > s[0]:
+            return s[1]
+
+myfile = "~/downloads/daylio_export_2020_11_20.csv"
+f = pd.read_csv(myfile)
 keep_col = ["full_date", "date", "time",  "note"]
 new_f = f[keep_col]
-new_f.to_csv("newFile.csv", index=False)
-# print(new_f)
 keywords = ["started", "administered", "stopped"]
 bads = ["took", "headache", "had", "used"]
 goods = ["aimovig"]
 all_events = []
+headache_events = []
+headache_scale_switch=datetime.fromtimestamp(1541430000)
+
 for i in range(len(new_f)):
     note = str(new_f["note"][i]).lower()
     events = []
@@ -25,22 +33,34 @@ for i in range(len(new_f)):
         for keyword in keywords:
             if keyword in event:
                 all_events += [(dt_obj, event)]
-                # print((time, event))
                 continue
         for good in goods:
             if good in event:
                 all_events += [(dt_obj, event)]
                 break
-print(len(all_events))
-for event in all_events:
-    print(event)
+    for event in events:
+        if "headache" in event:
+            mmm = re.findall(".*[Hh]eadache (\d(\.\d*)?).*", event)
+            if len(mmm) > 0:
+                intensity = float(mmm[0][0])
 
-stamps = [int(x[0].timestamp()) for x in all_events]
-events = [x[1] for x in all_events]
+                # Special case for headaches: scale was switched from 1-10 to 0-5, must convert
+                # old entries based on conversion date marker
+                if headache_scale_switch > dt_obj:
+                    intensity = headache_scale(intensity)
 
-med_changes =  {"time": stamps,
-                "med_events": events
-                }
-df = pd.DataFrame(med_changes, columns= ["time", "med_events"])
+                qol = 100.0 - 20 * intensity
+                headache_events +=[(dt_obj, qol)]
 
-df.to_csv("/home/alex/bbbbb/biometrics/data/med_events.csv", index = False, header=True)
+med_stamps = [int(x[0].timestamp()) for x in all_events]
+med_events = [x[1] for x in all_events]
+med_changes =  {"time": med_stamps, "med_events": med_events }
+med_df = pd.DataFrame(med_changes, columns= ["time", "med_events"])
+med_df.to_csv(os.environ["BIOMETRICS_ROOT"] + "/biometrics/data/med_events.csv", index=False, header=True)
+
+headache_events.reverse()
+headache_stamps = [int(x[0].timestamp()) for x in headache_events]
+headache_events = [x[1] for x in headache_events]
+headache_changes =  {"time": headache_stamps, "rating": headache_events }
+headache_df = pd.DataFrame(headache_changes, columns= ["time", "rating"])
+headache_df.to_csv(os.environ["BIOMETRICS_ROOT"] + "/biometrics/data/headache.csv", index=False, header=True)
