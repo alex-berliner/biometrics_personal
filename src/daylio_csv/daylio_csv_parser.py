@@ -10,7 +10,9 @@ def headache_scale(intensity):
         if intensity > s[0]:
             return s[1]
 
-myfile = "~/downloads/daylio_export_2020_11_20.csv"
+files = os.listdir(os.environ["HOME"] + "/downloads")
+myfile = os.environ["HOME"] + "/downloads/" + sorted([x for x in files if re.match(".*\.csv", x)])[-1]
+print("Reading %s"%myfile)
 f = pd.read_csv(myfile)
 keep_col = ["full_date", "date", "time",  "note"]
 new_f = f[keep_col]
@@ -50,7 +52,7 @@ for i in range(len(new_f)):
                     intensity = headache_scale(intensity)
 
                 qol = 100.0 - 20 * intensity
-                headache_events +=[(dt_obj, qol)]
+                headache_events += [(dt_obj, qol)]
 
 med_stamps = [int(x[0].timestamp()) for x in all_events]
 med_events = [x[1] for x in all_events]
