@@ -16,7 +16,7 @@ print("Reading %s"%myfile)
 f = pd.read_csv(myfile)
 keep_col = ["full_date", "date", "time",  "note"]
 new_f = f[keep_col]
-keywords = ["started", "administered", "stopped"]
+keywords = ["started", "ended", "administered", "stopped", "performed"]
 bads = ["took", "headache", "had", "used"]
 goods = ["aimovig"]
 all_events = []
@@ -24,7 +24,7 @@ headache_events = []
 headache_scale_switch=datetime.fromtimestamp(1541430000)
 
 for i in range(len(new_f)):
-    note = str(new_f["note"][i]).lower()
+    note = str(new_f["note"][i]).lower().replace("administered", "performed")
     events = []
     for keyword in keywords+bads:
         note = note.replace(" %s"%keyword, ";%s"%keyword)
