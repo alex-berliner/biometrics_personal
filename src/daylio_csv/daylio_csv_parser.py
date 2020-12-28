@@ -64,22 +64,6 @@ headache_events.reverse()
 headache_stamps = [int(x[0].timestamp()) for x in headache_events]
 headache_events = [x[1] for x in headache_events]
 
-# perform 20 day running average on headache data
-day_average = 20
-avgq=[]
-hen = []
-for e in headache_events:
-    avgq.append(e)
-    if len(avgq) > day_average:
-        avgq = avgq[1:]
-    hen += [float(round(sum(avgq)/day_average))]
-
-# replace average data with raw data for last 120 days
-raw_count = 120
-last_10 = headache_events[-raw_count:]
-hen[-raw_count:] = last_10
-headache_events = hen
-
 headache_changes =  {"time": headache_stamps, "rating": headache_events }
 headache_df = pd.DataFrame(headache_changes, columns= ["time", "rating"])
 headache_df.to_csv(os.environ["BIOMETRICS_ROOT"] + "/biometrics/data/headache.csv", index=False, header=True)
